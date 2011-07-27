@@ -1,0 +1,70 @@
+// Copyright (c) 2011 by  Marco Túlio Ribeiro <marcotcr@gmail.com>,
+//                        Tiago Alves Macambira <tmacam@burocrata.org>
+// All rights reserved.
+//
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
+// Implementation of counters.
+
+#ifndef COUNTER_H_
+#define COUNTER_H_
+
+#include <string>
+#include <tr1/unordered_map>
+#include "counter.pb.h"
+
+class CounterManager {
+ public:
+  CounterManager();
+  void IncrementCounter(const std::string& name, int value);
+  void OutputAndResetAllCounters(RenderoCounterGroup* output_group);
+  // Returns the value of a counter. returns -1 if non-existant.
+  int counter(const std::string& name);
+ private:
+  std::tr1::unordered_map<std::string, int> counters_;
+};
+
+class Counter {
+ public:
+  Counter(const std::string& name, int value, CounterManager* counter_manager);
+  // Increments the counter's value, and propagates the operation to the
+  // appropriate counter manager.
+  void Increment(int i);
+  int value();
+ private:
+  CounterManager* counter_manager_;
+  std::string name_;
+  int value_;
+};
+
+
+class CounterAgregator {
+ public:
+  CounterAgregator();
+  void UpdateCounters(const RenderoCounterGroup& counter_group);
+  void PrintCounters();
+  // Returns the value of a counter. returns -1 if non-existant.
+  int counter(const std::string& name);
+ private:
+  std::tr1::unordered_map<std::string, int> counters_;
+};
+
+
+#endif  // COUNTER_H_
